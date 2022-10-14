@@ -80,16 +80,49 @@ void Event::updateNumDate() {
     numDate += nSec;
 }
 
+void Event::updateNumIp() {
+    // get numerical ip value and ip array value from
+    // this->ip
+    std::stringstream ipStream;
+    ipStream << this->ip;
+
+    std::string first;
+    std::string second;
+    std::string third;
+    std::string fourth;
+
+    std::getline(ipStream, first, '.');
+    std::getline(ipStream, second, '.');
+    std::getline(ipStream, third, '.');
+    std::getline(ipStream, fourth, ':');
+
+    int nFirst = std::stoi(first);
+    int nSecond = std::stoi(second);
+    int nThird = std::stoi(third);
+    int nFourth = std::stoi(fourth);    
+    
+    this->arrIp = {nFirst, nSecond, nThird, nFourth};
+
+    this->numIp = 0;
+    this->numIp += nFirst * std::pow(1000, 3);
+    this->numIp += nSecond * std::pow(1000, 2);
+    this->numIp += nThird * 1000;
+    this->numIp += nFourth;
+}
+
 Event::Event() {
      constructMap();
 }
 
-Event::Event(std::string _message, std::string _date) {
+Event::Event(std::string _message, std::string _date, std::string _ip) {
     constructMap();
     
     message = _message;
     date = _date;
+    ip = _ip;
+    
     updateNumDate();
+    updateNumIp();
 }
 
 std::string Event::getMessage() const {
@@ -98,6 +131,10 @@ std::string Event::getMessage() const {
 
 std::string Event::getDate() const {
     return date;
+}
+
+std::string Event::getIp() const {
+    return ip;
 }
 
 void Event::setMessage(std::string _message) {
@@ -109,13 +146,25 @@ void Event::setDate(std::string _date) {
     updateNumDate();
 }
 
+void Event::setIp(std::string _ip) {
+    ip = _ip;
+    updateNumIp();
+}
+
 int Event::getNumDate() const {
     return numDate;
 }
 
+unsigned long long int Event::getNumIp() const {
+    return this->numIp;
+}
 
 std::vector<int> Event::getArrDate() const {
     return arrDate;
+}
+
+std::vector<int> Event::getArrIp() const {
+    return arrIp;
 }
 
 void Event::loadData(std::string data) {
@@ -123,6 +172,7 @@ void Event::loadData(std::string data) {
     dataStream << data;
 
     std::stringstream dateStream;
+    std::stringstream ipStream;
     std::stringstream messageStream;
 
     std::string temp;
@@ -133,19 +183,25 @@ void Event::loadData(std::string data) {
         dateStream << temp << " ";
     }
 
+    // add the ip 
+    std::getline(dataStream, temp, ' ');
+    ipStream << temp;
+
     // add the rest of the message
     while (std::getline(dataStream, temp, ' ')) {
        messageStream << temp << " "; 
     }
 
     date = dateStream.str();
+    ip =  ipStream.str();
     message = messageStream.str();
 
     updateNumDate();
+    updateNumIp();
 }
 
 std::string Event::str() const {
     std::stringstream msg;
-    msg << date << " " << message; 
+    msg << date << " " << ip << " " << message; 
     return msg.str();
 }

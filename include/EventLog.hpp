@@ -18,19 +18,26 @@
 class EventLog {
     private:
         std::vector<Event> events;
-    
+
         // radix sort like events 
-        void sortEvents(int, int, int);
+        void sortEvents(int, int, int, int, int, bool);
 
         // get index position of event with given date
         int getEventIndex(Event) const;
 
+        // get index position of event with a given ip
+        int getEventIndexByIp(Event) const;
 
     public:
         EventLog() = default;
 
         void loadEvents(std::string);
+        
+        // by date range
         std::vector<Event> getEventsByRange(std::string, std::string) const; 
+
+        // by ip range
+        std::vector<Event> getEventsByIpRange(std::string, std::string) const;
 
         // for registering 
         void saveEvents(std::string);
